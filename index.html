@@ -17,6 +17,82 @@
   </header>
   <nav id="main-nav">
     <button class="nav-btn active" data-section="willkommen">Willkommen</button>
+    <button class="nav-btn" data-section="uebersicht">Übersicht</button>
+    <button class="nav-btn" data-section="verwaltung">Verwaltung</button>
+  </nav>
+  <main>
+    <section id="sec-willkommen" class="section">
+      <div class="card">
+        <h2>Belege Erfassen</h2>
+        <p class="subtitle">Bitte alle Felder ausfüllen und den Beleg hochladen.</p>
+        <div id="form-container"><p class="loading-text">Formular wird geladen...</p></div>
+      </div>
+    </section>
+    <section id="sec-uebersicht" class="section hidden">
+      <div class="card"><h2>Übersicht</h2><p class="subtitle">Kommt bald.</p></div>
+    </section>
+    <section id="sec-verwaltung" class="section hidden">
+      <div id="admin-login" class="card">
+        <h2>Verwaltung</h2>
+        <p class="subtitle">Nur für Administratoren.</p>
+        <div class="form-group"><label for="admin-email">E-Mail</label><input type="email" id="admin-email" value="leo.j.daeniker@bluewin.ch"></div>
+        <div class="form-group"><label for="admin-password">Passwort</label><input type="password" id="admin-password" placeholder="Passwort eingeben"></div>
+        <button class="btn btn-primary" id="btn-login">Anmelden</button>
+        <p id="login-error" class="msg-error hidden"></p>
+      </div>
+      <div id="admin-dashboard" class="hidden">
+        <div class="admin-topbar"><h2>Verwaltung</h2><button class="btn btn-secondary" id="btn-logout">Abmelden</button></div>
+        <div class="tabs">
+          <button class="tab-btn active" data-tab="submissions">Einreichungen</button>
+          <button class="tab-btn" data-tab="formbuilder">Formular bearbeiten</button>
+        </div>
+        <div id="tab-submissions" class="tab-content">
+          <div class="card">
+            <div class="filters">
+              <input type="text" id="filter-search" placeholder="Suchen...">
+              <select id="filter-projekt"><option value="">Alle Projekte</option></select>
+              <select id="filter-bezahlt"><option value="">Alle Zahlungsarten</option><option value="Privat">Privat</option><option value="Card">Card</option><option value="Rechnung">Rechnung</option></select>
+              <input type="date" id="filter-from"><input type="date" id="filter-to">
+              <button class="btn btn-secondary" id="btn-export-excel">Excel exportieren</button>
+            </div>
+            <div id="submissions-container"><p class="loading-text">Wird geladen...</p></div>
+          </div>
+        </div>
+        <div id="tab-formbuilder" class="tab-content hidden">
+          <div class="card">
+            <div class="builder-header">
+              <h3>Formular bearbeiten</h3>
+              <div class="builder-actions">
+                <button class="btn btn-secondary" id="btn-download-json">JSON sichern</button>
+                <label class="btn btn-secondary">JSON laden<input type="file" id="btn-upload-json" accept=".json" style="display:none"></label>
+                <button class="btn btn-primary" id="btn-save-form">Speichern</button>
+              </div>
+            </div>
+            <div id="questions-list" class="questions-list"></div>
+            <button class="btn btn-secondary" id="btn-add-question" style="margin-top:14px">+ Frage hinzufugen</button>
+          </div>
+        </div>
+      </div>
+    </section>
+                                                                                                                                         </main><!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Finanzen Pfadi Kriens</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <div class="header-inner">
+      <img src="wappen.png" alt="Pfadi Kriens Wappen" class="logo" onerror="this.style.display='none'">
+      <span class="site-title">Finanzen Pfadi Kriens</span>
+    </div>
+  </header>
+  <nav id="main-nav">
+    <button class="nav-btn active" data-section="willkommen">Willkommen</button>
     <button class="nav-btn" data-section="uebersicht">Uebersicht</button>
     <button class="nav-btn" data-section="verwaltung">Verwaltung</button>
   </nav>
