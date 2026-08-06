@@ -7,6 +7,7 @@
 // ---------- Supabase Client ----------
 const SUPABASE_URL  = 'https://vecofpjmmyebljrdwojn.supabase.co';
 const SUPABASE_KEY  = 'sb_publishable_T4LmXrksdyKBP6-Q5ag1Zg_AwnpHNoq';
+const ADMIN_EMAIL   = 'leo.j.daeniker@bluewin.ch';
 const { createClient } = supabase;
 const db = createClient(SUPABASE_URL, SUPABASE_KEY);
 
@@ -26,6 +27,11 @@ function showSection(name) {
   const btn = document.querySelector(`.nav-btn[data-section="${name}"]`);
   if (sec) sec.classList.remove('hidden');
   if (btn) btn.classList.add('active');
+
+  // Wenn Verwaltung geöffnet wird und User eingeloggt ist → Dashboard zeigen
+  if (name === 'verwaltung' && currentUser) {
+    showAdminDashboard();
+  }
 }
 
 document.querySelectorAll('.nav-btn').forEach(btn => {
@@ -69,6 +75,10 @@ function renderForm(config) {
       html += `<p class="hint">${escHtml(q.hint)}</p>`;
     }
 
+    if (q.placeholder && q.type !== 'radio' && q.type !== 'file') {
+      // Hint shown below label for non-radio, non-file fields with a placeholder text as hint
+    }
+
     if (q.type === 'radio') {
       (q.options || []).forEach(opt => {
         html += `<label class="radio-label">
@@ -83,8 +93,11 @@ function renderForm(config) {
         ${q.required ? 'required' : ''}>`;
 
     } else {
+      if (q.placeholder) {
+        html += `<p class="hint">${escHtml(q.placeholder)}</p>`;
+      }
       html += `<input type="${q.type}" name="${q.id}"
-        placeholder="${escHtml(q.placeholder || '')}"
+        placeholder=""
         ${q.required ? 'required' : ''}>`;
     }
 
@@ -106,7 +119,6 @@ function renderForm(config) {
    FORM – BRANCHING (bedingte Felder)
    ============================================================ */
 function setupBranching(config) {
-  // Beim Ändern eines Radio-Buttons Sichtbarkeit neu berechnen
   config.questions.forEach(q => {
     if (q.type === 'radio') {
       document.querySelectorAll(`input[name="${q.id}"]`).forEach(radio => {
@@ -131,7 +143,6 @@ function updateVisibility(config) {
       group.classList.remove('hidden');
     } else {
       group.classList.add('hidden');
-      // Felder zurücksetzen wenn ausgeblendet
       group.querySelectorAll('input, textarea, select').forEach(el => {
         if (el.type === 'radio' || el.type === 'checkbox') el.checked = false;
         else el.value = '';
@@ -216,6 +227,7 @@ async function handleFormSubmit(e) {
   }
 
   // Einreichung in Datenbank speichern
+  // Bekannte Felder werden explizit gemappt; alle Felder zusätzlich als form_data JSONB gespeichert
   const { error: insertErr } = await db.from('submissions').insert({
     name:             formData.name            || null,
     email:            formData.email           || null,
@@ -228,7 +240,8 @@ async function handleFormSubmit(e) {
     debit_card:       formData.debit_card      || null,
     iban:             formData.iban            || null,
     adresse:          formData.adresse         || null,
-    beleg_url:        belege_url
+    beleg_url:        belege_url,
+    form_data:        formData
   });
 
   if (insertErr) {
@@ -256,13 +269,11 @@ function showStatus(el, msg, type) {
    ADMIN – LOGIN / LOGOUT
    ============================================================ */
 document.getElementById('btn-login').addEventListener('click', async () => {
-  const email     = document.getElementById('admin-email').value.trim();
   const password  = document.getElementById('admin-password').value;
   const errorEl   = document.getElementById('login-error');
-
   errorEl.classList.add('hidden');
 
-  const { data, error } = await db.auth.signInWithPassword({ email, password });
+  const { data, error } = await db.auth.signInWithPassword({ email: ADMIN_EMAIL, password });
   if (error) {
     errorEl.textContent = 'Anmeldung fehlgeschlagen: ' + error.message;
     errorEl.classList.remove('hidden');
@@ -289,7 +300,6 @@ document.getElementById('btn-logout').addEventListener('click', async () => {
 db.auth.onAuthStateChange((event, session) => {
   if (session?.user) {
     currentUser = session.user;
-    // Nur Dashboard anzeigen wenn im Verwaltungs-Bereich
     const verw = document.getElementById('sec-verwaltung');
     if (verw && !verw.classList.contains('hidden')) {
       showAdminDashboard();
@@ -336,7 +346,6 @@ async function loadSubmissions() {
 
   allSubmissions = data || [];
 
-  // Projekt-Filter befüllen
   const projekts = [...new Set(allSubmissions.map(s => s.projekt).filter(Boolean))].sort();
   const sel = document.getElementById('filter-projekt');
   sel.innerHTML = '<option value="">Alle Projekte</option>';
@@ -398,11 +407,10 @@ function renderSubmissionsTable(data) {
     </div>`;
 }
 
-// Beleg öffnen (temporäre URL erstellen)
 async function openBeleg(id, path) {
   const { data, error } = await db.storage
     .from('belege')
-    .createSignedUrl(path, 120);  // 2 Minuten gültig
+    .createSignedUrl(path, 120);
 
   if (error || !data?.signedUrl) {
     showToast('Beleg konnte nicht geöffnet werden.', 'error');
@@ -411,7 +419,6 @@ async function openBeleg(id, path) {
   window.open(data.signedUrl, '_blank');
 }
 
-// Filterlogik
 function applyFilters() {
   const search  = document.getElementById('filter-search').value.toLowerCase();
   const projekt = document.getElementById('filter-projekt').value;
@@ -436,7 +443,6 @@ function applyFilters() {
   document.getElementById(id)?.addEventListener('change', applyFilters);
 });
 
-// Excel Export
 document.getElementById('btn-export-excel').addEventListener('click', () => {
   if (!allSubmissions.length) {
     showToast('Keine Einreichungen zum Exportieren.', 'error');
@@ -459,8 +465,6 @@ document.getElementById('btn-export-excel').addEventListener('click', () => {
   }));
 
   const ws = XLSX.utils.json_to_sheet(rows);
-
-  // Spaltenbreiten
   ws['!cols'] = [
     {wch:14},{wch:20},{wch:26},{wch:28},{wch:14},{wch:10},
     {wch:12},{wch:12},{wch:14},{wch:18},{wch:26},{wch:32}
@@ -534,7 +538,7 @@ function deleteQuestion(index) {
 }
 
 /* ============================================================
-   FORM BUILDER – MODAL (Frage hinzufügen/bearbeiten)
+   FORM BUILDER – MODAL
    ============================================================ */
 document.getElementById('btn-add-question').addEventListener('click', () => {
   editingQuestionIdx = null;
@@ -555,10 +559,9 @@ function openQuestionModal(q) {
   document.getElementById('q-required').checked  = q?.required    || false;
   document.getElementById('q-options').value     = (q?.options || []).join('\n');
 
-  // ShowIf-Dropdown befüllen (nur Radio-Fragen als Auslöser)
   const showifSel = document.getElementById('q-showif-question');
   showifSel.innerHTML = '<option value="">Immer anzeigen</option>';
-  formConfig.questions.forEach((fq, i) => {
+  formConfig.questions.forEach((fq) => {
     if (fq.type !== 'radio') return;
     const selected = (q?.showIf?.question === fq.id) ? 'selected' : '';
     showifSel.innerHTML += `<option value="${fq.id}" ${selected}>${escHtml(fq.label)}</option>`;
@@ -615,7 +618,6 @@ document.getElementById('btn-modal-save').addEventListener('click', () => {
   const showifV  = document.getElementById('q-showif-value').value.trim();
   const showIf   = (showifQ && showifV) ? { question: showifQ, value: showifV } : undefined;
 
-  // ID: bei Bearbeitung beibehalten, sonst neu generieren
   const id = editingQuestionIdx !== null
     ? formConfig.questions[editingQuestionIdx].id
     : label.toLowerCase().replace(/[^a-z0-9]/g, '_').replace(/_+/g, '_').substring(0, 25) + '_' + Date.now().toString(36);
@@ -650,21 +652,13 @@ document.getElementById('btn-save-form').addEventListener('click', async () => {
     showToast('Fehler beim Speichern: ' + error.message, 'error');
   } else {
     showToast('Formular gespeichert!', 'success');
-    // Öffentliches Formular aktualisieren
-    if (document.getElementById('main-form')) renderForm(formConfig);
+    // Willkommen-Formular sofort aktualisieren
+    renderForm(formConfig);
   }
 });
 
 document.getElementById('btn-download-json').addEventListener('click', () => {
-  const blob = new Blob(
-    [JSON.stringify(formConfig, null, 2)],
-    { type: 'application/json' }
-  );
-  const a      = document.createElement('a');
-  a.href       = URL.createObjectURL(blob);
-  a.download   = `form_config_${new Date().toISOString().slice(0,10)}.json`;
-  a.click();
-  URL.revokeObjectURL(a.href);
+  downloadJson(formConfig, `form_config_${new Date().toISOString().slice(0,10)}.json`);
   showToast('JSON Backup heruntergeladen.');
 });
 
@@ -686,14 +680,77 @@ document.getElementById('btn-upload-json').addEventListener('change', e => {
     }
   };
   reader.readAsText(file);
-  e.target.value = '';  // Reset damit dieselbe Datei nochmals gewählt werden kann
+  e.target.value = '';
+});
+
+/* ============================================================
+   EINSTELLUNGEN – PASSWORT ÄNDERN
+   ============================================================ */
+document.getElementById('btn-change-password').addEventListener('click', async () => {
+  const newPwd    = document.getElementById('new-password').value;
+  const confirm   = document.getElementById('confirm-password').value;
+  const statusEl  = document.getElementById('password-status');
+
+  statusEl.classList.add('hidden');
+
+  if (!newPwd || newPwd.length < 8) {
+    statusEl.textContent = 'Passwort muss mindestens 8 Zeichen lang sein.';
+    statusEl.className   = 'msg-error';
+    statusEl.classList.remove('hidden');
+    return;
+  }
+  if (newPwd !== confirm) {
+    statusEl.textContent = 'Passwörter stimmen nicht überein.';
+    statusEl.className   = 'msg-error';
+    statusEl.classList.remove('hidden');
+    return;
+  }
+
+  const { error } = await db.auth.updateUser({ password: newPwd });
+  if (error) {
+    statusEl.textContent = 'Fehler: ' + error.message;
+    statusEl.className   = 'msg-error';
+  } else {
+    statusEl.textContent = '✓ Passwort erfolgreich geändert.';
+    statusEl.className   = 'msg-success';
+    document.getElementById('new-password').value    = '';
+    document.getElementById('confirm-password').value = '';
+  }
+  statusEl.classList.remove('hidden');
+});
+
+/* ============================================================
+   EINSTELLUNGEN – DATEN BACKUP
+   ============================================================ */
+document.getElementById('btn-backup-config').addEventListener('click', () => {
+  if (!formConfig) { showToast('Kein Formular geladen.', 'error'); return; }
+  downloadJson(formConfig, `form_config_${new Date().toISOString().slice(0,10)}.json`);
+  showToast('Formular-Backup heruntergeladen.');
+});
+
+document.getElementById('btn-backup-submissions').addEventListener('click', async () => {
+  const { data, error } = await db
+    .from('submissions')
+    .select('*')
+    .order('submitted_at', { ascending: false });
+
+  if (error) { showToast('Fehler beim Laden: ' + error.message, 'error'); return; }
+  downloadJson(data, `einreichungen_${new Date().toISOString().slice(0,10)}.json`);
+  showToast('Einreichungen-Backup heruntergeladen.');
 });
 
 /* ============================================================
    HILFSFUNKTIONEN
    ============================================================ */
+function downloadJson(obj, filename) {
+  const blob = new Blob([JSON.stringify(obj, null, 2)], { type: 'application/json' });
+  const a    = document.createElement('a');
+  a.href     = URL.createObjectURL(blob);
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
 
-// Toast-Benachrichtigung
 function showToast(msg, type = 'success') {
   const toast    = document.getElementById('toast');
   toast.textContent = msg;
@@ -702,7 +759,6 @@ function showToast(msg, type = 'success') {
   toast._timeout = setTimeout(() => toast.classList.add('hidden'), 3500);
 }
 
-// HTML escapen (XSS-Schutz)
 function escHtml(str) {
   if (!str) return '';
   return String(str)
