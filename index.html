@@ -11,210 +11,228 @@
 </head>
 <body>
 
-  <!-- HEADER -->
-  <header>
-    <div class="header-inner">
-      <img src="wappen.png" alt="Pfadi Kriens Wappen" class="logo" onerror="this.style.display='none'">
-      <span class="site-title">Finanzen Pfadi Kriens</span>
+<!-- HEADER -->
+<header>
+  <div class="header-inner">
+    <img src="wappen.png" alt="Pfadi Kriens Wappen" class="logo" onerror="this.style.display='none'">
+    <span class="site-title">Finanzen Pfadi Kriens</span>
+  </div>
+</header>
+
+<!-- NAVIGATION -->
+<nav id="main-nav">
+  <button class="nav-btn active" data-section="willkommen">Willkommen</button>
+  <button class="nav-btn" data-section="uebersicht">Members</button>
+  <button class="nav-btn" data-section="verwaltung">Verwaltung</button>
+</nav>
+
+<main>
+
+<!-- ==================== WILLKOMMEN ==================== -->
+<section id="sec-willkommen" class="section">
+  <div class="card">
+    <h2>Belege Erfassen</h2>
+    <p class="subtitle">Bitte alle Felder ausfüllen und den Beleg hochladen.</p>
+    <div id="form-container">
+      <p class="loading-text">Formular wird geladen...</p>
     </div>
-  </header>
+  </div>
+</section>
 
-  <!-- NAVIGATION -->
-  <nav id="main-nav">
-    <button class="nav-btn active" data-section="willkommen">Willkommen</button>
-    <button class="nav-btn" data-section="uebersicht">Übersicht</button>
-    <button class="nav-btn" data-section="verwaltung">Verwaltung</button>
-  </nav>
+<!-- ==================== MEMBERS ==================== -->
+<section id="sec-uebersicht" class="section hidden">
+  <div id="members-login" class="card">
+    <h2>Members</h2>
+    <p class="subtitle">Dieser Bereich ist nur fuer Mitglieder zugaenglich.</p>
+    <div class="form-group">
+      <label for="members-password">Passwort</label>
+      <input type="password" id="members-password" placeholder="Passwort eingeben">
+    </div>
+    <button class="btn btn-primary" id="btn-members-login">Einloggen</button>
+    <p id="members-login-error" class="msg-error hidden"></p>
+  </div>
+  <div id="members-dashboard" class="hidden">
+    <div class="admin-topbar">
+      <h2>Members</h2>
+      <button class="btn btn-secondary" id="btn-members-logout">Abmelden</button>
+    </div>
+    <div class="tabs members-tabs">
+      <button class="tab-btn active" data-gruppe="Biber">Biber</button>
+      <button class="tab-btn" data-gruppe="Auroras">Auroras</button>
+      <button class="tab-btn" data-gruppe="Apollos">Apollos</button>
+      <button class="tab-btn" data-gruppe="Mapfis">Mapfis</button>
+      <button class="tab-btn" data-gruppe="Bupfis">Bupfis</button>
+      <button class="tab-btn" data-gruppe="Pios">Pios</button>
+      <button class="tab-btn" data-gruppe="Rover">Rover</button>
+    </div>
+    <div id="members-ledger-content">
+      <p class="loading-text">Wird geladen...</p>
+    </div>
+  </div>
+</section>
 
-  <main>
-
-    <!-- ==================== WILLKOMMEN ==================== -->
-    <section id="sec-willkommen" class="section">
+<!-- ==================== VERWALTUNG ==================== -->
+<section id="sec-verwaltung" class="section hidden">
+  <div id="admin-login" class="card">
+    <h2>Verwaltung</h2>
+    <p class="subtitle">Nur fuer Administratoren.</p>
+    <div class="form-group">
+      <label for="admin-password">Passwort</label>
+      <input type="password" id="admin-password" placeholder="Passwort eingeben">
+    </div>
+    <button class="btn btn-primary" id="btn-login">Anmelden</button>
+    <p id="login-error" class="msg-error hidden"></p>
+  </div>
+  <div id="admin-dashboard" class="hidden">
+    <div class="admin-topbar">
+      <h2>Verwaltung</h2>
+      <button class="btn btn-secondary" id="btn-logout">Abmelden</button>
+    </div>
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="submissions">Einreichungen</button>
+      <button class="tab-btn" data-tab="konten">Konten</button>
+      <button class="tab-btn" data-tab="formbuilder">Formular</button>
+      <button class="tab-btn" data-tab="einstellungen">Einstellungen</button>
+    </div>
+    <div id="tab-submissions" class="tab-content">
       <div class="card">
-        <h2>Belege Erfassen</h2>
-        <p class="subtitle">Bitte alle Felder ausfüllen und den Beleg hochladen.</p>
-        <div id="form-container">
-          <p class="loading-text">Formular wird geladen…</p>
+        <div class="filters">
+          <input type="text" id="filter-search" placeholder="Suchen...">
+          <select id="filter-projekt"><option value="">Alle Projekte</option></select>
+          <select id="filter-bezahlt">
+            <option value="">Alle Zahlungsarten</option>
+            <option value="Privat">Privat</option>
+            <option value="Card">Card</option>
+            <option value="Rechnung">Rechnung</option>
+          </select>
+          <input type="date" id="filter-from">
+          <input type="date" id="filter-to">
+          <button class="btn btn-secondary" id="btn-export-excel">Excel</button>
         </div>
+        <div id="submissions-container"><p class="loading-text">Wird geladen...</p></div>
       </div>
-    </section>
-
-    <!-- ==================== ÜBERSICHT ==================== -->
-    <section id="sec-uebersicht" class="section hidden">
+    </div>
+    <div id="tab-konten" class="tab-content hidden">
       <div class="card">
-        <h2>Übersicht</h2>
-        <p class="subtitle">Kommt bald.</p>
+        <div class="konten-header">
+          <div class="gruppe-selector">
+            <button class="gruppe-btn active" data-gruppe="Biber">Biber</button>
+            <button class="gruppe-btn" data-gruppe="Auroras">Auroras</button>
+            <button class="gruppe-btn" data-gruppe="Apollos">Apollos</button>
+            <button class="gruppe-btn" data-gruppe="Mapfis">Mapfis</button>
+            <button class="gruppe-btn" data-gruppe="Bupfis">Bupfis</button>
+            <button class="gruppe-btn" data-gruppe="Pios">Pios</button>
+            <button class="gruppe-btn" data-gruppe="Rover">Rover</button>
+          </div>
+          <button class="btn btn-primary" id="btn-add-eintrag">+ Eintrag</button>
+        </div>
+        <div id="konten-table-container"><p class="loading-text">Wird geladen...</p></div>
       </div>
-    </section>
-
-    <!-- ==================== VERWALTUNG ==================== -->
-    <section id="sec-verwaltung" class="section hidden">
-
-      <!-- Login card -->
-      <div id="admin-login" class="card">
-        <h2>Verwaltung</h2>
-        <p class="subtitle">Nur für Administratoren.</p>
+    </div>
+    <div id="tab-formbuilder" class="tab-content hidden">
+      <div class="card">
+        <div class="builder-header">
+          <h3>Formular bearbeiten</h3>
+          <div class="builder-actions">
+            <button class="btn btn-secondary" id="btn-download-json">JSON</button>
+            <label class="btn btn-secondary">Laden<input type="file" id="btn-upload-json" accept=".json" style="display:none"></label>
+            <button class="btn btn-primary" id="btn-save-form">Speichern</button>
+          </div>
+        </div>
+        <div id="questions-list" class="questions-list"></div>
+        <button class="btn btn-secondary" id="btn-add-question" style="margin-top:14px">+ Frage</button>
+      </div>
+    </div>
+    <div id="tab-einstellungen" class="tab-content hidden">
+      <div class="card" style="margin-bottom:16px">
+        <h3>Admin-Passwort aendern</h3>
+        <div class="form-group" style="margin-top:16px">
+          <label for="new-password">Neues Passwort</label>
+          <input type="password" id="new-password" placeholder="Mind. 8 Zeichen">
+        </div>
         <div class="form-group">
-          <label for="admin-password">Passwort</label>
-          <input type="password" id="admin-password" placeholder="Passwort eingeben">
+          <label for="confirm-password">Bestaetigen</label>
+          <input type="password" id="confirm-password" placeholder="Wiederholen">
         </div>
-        <button class="btn btn-primary" id="btn-login">Anmelden</button>
-        <p id="login-error" class="msg-error hidden"></p>
+        <button class="btn btn-primary" id="btn-change-password">Aendern</button>
+        <p id="password-status" class="hidden" style="margin-top:12px"></p>
       </div>
-
-      <!-- Admin dashboard (shown after login) -->
-      <div id="admin-dashboard" class="hidden">
-
-        <div class="admin-topbar">
-          <h2>Verwaltung</h2>
-          <button class="btn btn-secondary" id="btn-logout">Abmelden</button>
+      <div class="card" style="margin-bottom:16px">
+        <h3>Members-Passwort aendern</h3>
+        <div class="form-group" style="margin-top:16px">
+          <label for="new-members-password">Neues Passwort</label>
+          <input type="password" id="new-members-password" placeholder="Mind. 6 Zeichen">
         </div>
-
-        <!-- Tabs -->
-        <div class="tabs">
-          <button class="tab-btn active" data-tab="submissions">Einreichungen</button>
-          <button class="tab-btn" data-tab="formbuilder">Formular bearbeiten</button>
-          <button class="tab-btn" data-tab="einstellungen">Einstellungen</button>
+        <div class="form-group">
+          <label for="confirm-members-password">Bestaetigen</label>
+          <input type="password" id="confirm-members-password" placeholder="Wiederholen">
         </div>
-
-        <!-- TAB: Submissions -->
-        <div id="tab-submissions" class="tab-content">
-          <div class="card">
-            <div class="filters">
-              <input type="text" id="filter-search" placeholder="🔍 Suchen…">
-              <select id="filter-projekt">
-                <option value="">Alle Projekte</option>
-              </select>
-              <select id="filter-bezahlt">
-                <option value="">Alle Zahlungsarten</option>
-                <option value="Privat">Privat</option>
-                <option value="Card">Card</option>
-                <option value="Rechnung">Rechnung</option>
-              </select>
-              <input type="date" id="filter-from" title="Von Datum">
-              <input type="date" id="filter-to" title="Bis Datum">
-              <button class="btn btn-secondary" id="btn-export-excel">📥 Excel exportieren</button>
-            </div>
-            <div id="submissions-container">
-              <p class="loading-text">Einreichungen werden geladen…</p>
-            </div>
-          </div>
+        <button class="btn btn-primary" id="btn-change-members-password">Aendern</button>
+        <p id="members-password-status" class="hidden" style="margin-top:12px"></p>
+      </div>
+      <div class="card">
+        <h3>Backup</h3>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:16px">
+          <button class="btn btn-secondary" id="btn-backup-config">Formular-JSON</button>
+          <button class="btn btn-secondary" id="btn-backup-submissions">Einreichungen JSON</button>
         </div>
-
-        <!-- TAB: Form builder -->
-        <div id="tab-formbuilder" class="tab-content hidden">
-          <div class="card">
-            <div class="builder-header">
-              <h3>Formular bearbeiten</h3>
-              <div class="builder-actions">
-                <button class="btn btn-secondary" id="btn-download-json">💾 JSON sichern</button>
-                <label class="btn btn-secondary">
-                  📂 JSON laden
-                  <input type="file" id="btn-upload-json" accept=".json" style="display:none">
-                </label>
-                <button class="btn btn-primary" id="btn-save-form">Speichern</button>
-              </div>
-            </div>
-            <div id="questions-list" class="questions-list"></div>
-            <button class="btn btn-secondary" id="btn-add-question" style="margin-top:14px">+ Frage hinzufügen</button>
-          </div>
-        </div>
-
-        <!-- TAB: Einstellungen -->
-        <div id="tab-einstellungen" class="tab-content hidden">
-
-          <div class="card" style="margin-bottom:16px">
-            <h3>Passwort ändern</h3>
-            <p class="subtitle" style="margin-top:6px">Neues Passwort für den Admin-Bereich festlegen.</p>
-            <div class="form-group" style="margin-top:16px">
-              <label for="new-password">Neues Passwort</label>
-              <input type="password" id="new-password" placeholder="Mindestens 8 Zeichen">
-            </div>
-            <div class="form-group">
-              <label for="confirm-password">Passwort bestätigen</label>
-              <input type="password" id="confirm-password" placeholder="Passwort wiederholen">
-            </div>
-            <button class="btn btn-primary" id="btn-change-password">Passwort ändern</button>
-            <p id="password-status" class="hidden" style="margin-top:12px"></p>
-          </div>
-
-          <div class="card">
-            <h3>Daten Backup</h3>
-            <p class="subtitle" style="margin-top:6px">Formularkonfiguration und Einreichungen als Datei sichern.</p>
-            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:16px">
-              <button class="btn btn-secondary" id="btn-backup-config">💾 Formular-JSON</button>
-              <button class="btn btn-secondary" id="btn-backup-submissions">📥 Einreichungen JSON</button>
-            </div>
-          </div>
-
-        </div>
-
-      </div>
-    </section>
-
-  </main>
-
-  <!-- ==================== QUESTION EDITOR MODAL ==================== -->
-  <div id="modal-overlay" class="modal-overlay hidden">
-    <div class="modal">
-      <h3 id="modal-title">Frage bearbeiten</h3>
-
-      <div class="form-group">
-        <label for="q-label">Fragetext *</label>
-        <input type="text" id="q-label" placeholder="z.B. Welches Projekt?">
-      </div>
-
-      <div class="form-group">
-        <label for="q-type">Feldtyp *</label>
-        <select id="q-type">
-          <option value="text">Text (einzeilig)</option>
-          <option value="email">E-Mail</option>
-          <option value="number">Zahl</option>
-          <option value="date">Datum</option>
-          <option value="radio">Auswahl (Radio-Buttons)</option>
-          <option value="file">Datei hochladen</option>
-        </select>
-      </div>
-
-      <div class="form-group">
-        <label for="q-placeholder">Platzhalter / Hinweis <span class="optional">(optional)</span></label>
-        <input type="text" id="q-placeholder" placeholder="Optionaler Hinweistext unter der Frage">
-      </div>
-
-      <div class="form-group">
-        <label class="checkbox-label">
-          <input type="checkbox" id="q-required">
-          Pflichtfeld
-        </label>
-      </div>
-
-      <div id="q-options-group" class="form-group hidden">
-        <label for="q-options">Optionen <span class="optional">(eine pro Zeile)</span></label>
-        <textarea id="q-options" rows="6" placeholder="Option 1&#10;Option 2&#10;Option 3"></textarea>
-      </div>
-
-      <div class="form-group">
-        <label for="q-showif-question">Nur anzeigen wenn…</label>
-        <select id="q-showif-question">
-          <option value="">Immer anzeigen</option>
-        </select>
-        <input type="text" id="q-showif-value" placeholder="… diesen Wert hat" class="hidden" style="margin-top:8px">
-      </div>
-
-      <div class="modal-footer">
-        <button class="btn btn-secondary" id="btn-modal-cancel">Abbrechen</button>
-        <button class="btn btn-primary" id="btn-modal-save">Übernehmen</button>
       </div>
     </div>
   </div>
+</section>
+</main>
 
-  <!-- TOAST NOTIFICATION -->
-  <div id="toast" class="toast hidden"></div>
+<!-- QUESTION MODAL -->
+<div id="modal-overlay" class="modal-overlay hidden">
+  <div class="modal">
+    <h3 id="modal-title">Frage bearbeiten</h3>
+    <div class="form-group"><label for="q-label">Fragetext *</label><input type="text" id="q-label"></div>
+    <div class="form-group"><label for="q-type">Feldtyp *</label>
+      <select id="q-type">
+        <option value="text">Text</option><option value="email">E-Mail</option>
+        <option value="number">Zahl</option><option value="date">Datum</option>
+        <option value="radio">Auswahl</option><option value="file">Datei</option>
+      </select>
+    </div>
+    <div class="form-group"><label for="q-placeholder">Hinweis</label><input type="text" id="q-placeholder"></div>
+    <div class="form-group"><label class="checkbox-label"><input type="checkbox" id="q-required"> Pflichtfeld</label></div>
+    <div id="q-options-group" class="form-group hidden"><label for="q-options">Optionen</label><textarea id="q-options" rows="6"></textarea></div>
+    <div class="form-group">
+      <label for="q-showif-question">Nur anzeigen wenn...</label>
+      <select id="q-showif-question"><option value="">Immer anzeigen</option></select>
+      <input type="text" id="q-showif-value" class="hidden" style="margin-top:8px">
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" id="btn-modal-cancel">Abbrechen</button>
+      <button class="btn btn-primary" id="btn-modal-save">Uebernehmen</button>
+    </div>
+  </div>
+</div>
 
-  <!-- SCRIPTS -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
-  <script src="app.js"></script>
+<!-- EINTRAG MODAL -->
+<div id="eintrag-modal-overlay" class="modal-overlay hidden">
+  <div class="modal">
+    <h3 id="eintrag-modal-title">Eintrag</h3>
+    <div class="form-group"><label for="e-datum">Datum *</label><input type="date" id="e-datum"></div>
+    <div class="form-group"><label for="e-text">Beschreibung *</label><input type="text" id="e-text"></div>
+    <div class="form-group">
+      <label>Typ *</label>
+      <div style="display:flex;gap:16px;margin-top:8px">
+        <label class="radio-label"><input type="radio" name="e-typ" value="ausgabe" checked> Ausgabe</label>
+        <label class="radio-label"><input type="radio" name="e-typ" value="einnahme"> Einnahme</label>
+      </div>
+    </div>
+    <div class="form-group"><label for="e-betrag">Betrag (CHF) *</label><input type="number" id="e-betrag" step="0.01" min="0"></div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" id="btn-eintrag-cancel">Abbrechen</button>
+      <button class="btn btn-primary" id="btn-eintrag-save">Speichern</button>
+    </div>
+  </div>
+</div>
 
+<div id="toast" class="toast hidden"></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+<script src="app.js"></script>
 </body>
 </html>
