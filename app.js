@@ -23,7 +23,7 @@ let currentGruppe = 'Biber';
 let currentKontenGruppe = 'Biber';
 let editingEintragId = null;
 
-const GRUPPEN = ['Biber', 'Auroras', 'Apollos', 'Mapfis', 'Bupfis', 'Pios', 'Rover'];
+const GRUPPEN = ['Biber', 'Auroras', 'Apollos', 'Mapfi', 'Bupfi', 'Pios', 'Rover'];
 
 // SHA-256 of "Mitglieder2026!" – used as fallback if no setting stored yet
 const MEMBERS_PW_FALLBACK = '9737b41acf0113e49b3de3f8a6960f4030f754622767f8bcb2e28594deb1f18f';
@@ -256,21 +256,6 @@ async function handleFormSubmit(e) {
     submitBtn.disabled = false;
     submitBtn.textContent = 'Einreichen';
     return;
-  }
-
-  // Auto-create ledger entry if projekt matches a gruppe
-  const projektGruppe = (formData.projekt || '').trim();
-  if (GRUPPEN.includes(projektGruppe) && formData.betrag && parseFloat(formData.betrag) > 0) {
-    const eintragText = [formData.titel, formData.name].filter(Boolean).join(' – ') || 'Einreichung';
-    await db.from('ledger_entries').insert({
-      gruppe: projektGruppe,
-      datum: formData.beleg_datum || new Date().toISOString().slice(0, 10),
-      text: eintragText,
-      ausgabe: parseFloat(formData.betrag),
-      einnahme: null,
-      source: 'submission',
-      source_id: insertedRow?.id || null
-    });
   }
 
   showStatus(statusEl, '✓ Beleg erfolgreich eingereicht! Danke.', 'success');
@@ -565,7 +550,7 @@ function renderSubmissionsTable(data) {
       <td>${escHtml(bezahlt || '—')}</td>
       <td class="iban">${escHtml(s.iban || '—')}</td>
       <td>${belegLk}</td>
-      <td style="white-space:nowrap">${teamsBtn}${emailBtn}<button data-cid="${s.id}" data-cv="${!!s.contacted}" class="btn-icon btn-contacted${s.contacted ? ' contacted-yes' : ''}" onclick="toggleContacted('${s.id}',${!!s.contacted})" title="${s.contacted ? 'Kontaktiert' : 'Ausstehend'}">${s.contacted ? '✓' : '○'}</button><button class="btn-action btn-delete" title="Löschen" onclick="deleteSubmission('${s.id}','${escHtml(s.beleg_url||'')}')">🗑</button></td>
+      <td style="white-space:nowrap">${teamsBtn}${emailBtn}<button data-cid="${s.id}" data-cv="${!!s.contacted}" class="btn-icon btn-contacted${s.contacted ? ' contacted-yes' : ''}" onclick="toggleContacted('${s.id}',${!!s.contacted})" title="${s.contacted ? 'Bankzahlung rückgängig machen' : 'Als via Bank bezahlt markieren'}">${s.contacted ? '✓' : '○'}</button><button class="btn-action btn-delete" title="Löschen" onclick="deleteSubmission('${s.id}','${escHtml(s.beleg_url||'')}')">🗑</button></td>
     </tr>`;
   });
 
@@ -635,24 +620,44 @@ async function deleteSubmission(id, beleguUrl) {
   }
 }
 
-async function toggleContacted(id, current) {
+async async function toggleContacted(id, current) {
   const newVal = !current;
-  const { error } = await db.from('submissions').update({ contacted: newVal }).eq('id', id);
-  if (error) { showToast('Fehler: ' + error.message, 'error'); return; }
-  // Update in-memory state
-  const s = allSubmissions.find(s => s.id === id);
-  if (s) s.contacted = newVal;
-  // Update button without full reload
-  const btn = document.querySelector('[data-cid="' + id + '"]');
-  if (btn) {
-    btn.dataset.cv = newVal;
-    btn.classList.toggle('contacted-yes', newVal);
-    btn.title = newVal ? 'Kontaktiert' : 'Ausstehend';
-    btn.textContent = newVal ? '✓' : '○';
-    btn.onclick = function() { toggleContacted(id, newVal); };
+  const submission = allSubmissions.find(s => s.id === id);
+
+  const { error } = await db
+    .from('submissions')
+    .update({ contacted: newVal })
+    .eq('id', id);
+
+  if (error) { showToast(error.message, 'error'); return; }
+
+  if (newVal) {
+    // Create ledger entry if this projekt has a members account
+    if (submission && GRUPPEN.includes(submission.projekt) && submission.betrag > 0) {
+      const eintragText = [submission.titel, submission.name].filter(Boolean).join(' – ') || 'Einreichung';
+      await db.from('ledger_entries').insert({
+        gruppe: submission.projekt,
+        datum: submission.beleg_datum || new Date().toISOString().slice(0, 10),
+        text: eintragText,
+        ausgabe: parseFloat(submission.betrag),
+        einnahme: null,
+        source: 'submission',
+        source_id: id
+      });
+    }
+  } else {
+    // Remove linked ledger entry
+    await db
+      .from('ledger_entries')
+      .delete()
+      .eq('source_id', id)
+      .eq('source', 'submission');
   }
-  showToast(newVal ? 'Als kontaktiert markiert.' : 'Markierung entfernt.');
-}
+
+  if (submission) submission.contacted = newVal;
+  renderSubmissionsTable(allSubmissions);
+  showToast(newVal ? 'Als bezahlt via Bank markiert.' : 'Zahlung zurückgesetzt.');
+}}
 
 function applyFilters() {
   const search = document.getElementById('filter-search').value.toLowerCase();
@@ -735,6 +740,8 @@ async function loadKonten(gruppe) {
     .order('created_at', { ascending: true });
 
   if (gruppe !== currentKontenGruppe) return;
+  if (gruppe !== currentKontenGruppe) return;
+
   if (error) {
     container.innerHTML = `<p class="msg-error">Fehler: ${escHtml(error.message)}</p>`;
     return;
