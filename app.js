@@ -565,7 +565,7 @@ function renderSubmissionsTable(data) {
       <td>${escHtml(bezahlt || '—')}</td>
       <td class="iban">${escHtml(s.iban || '—')}</td>
       <td>${belegLk}</td>
-      <td style="white-space:nowrap">${teamsBtn}${emailBtn}</td>
+      <td style="white-space:nowrap">${teamsBtn}${emailBtn}<button data-cid="${s.id}" data-cv="${!!s.contacted}" class="btn-icon btn-contacted${s.contacted ? ' contacted-yes' : ''}" onclick="toggleContacted('${s.id}',${!!s.contacted})" title="${s.contacted ? 'Kontaktiert' : 'Ausstehend'}">${s.contacted ? '✓' : '○'}</button><button class="btn-icon btn-danger" onclick="deleteSubmission('${s.id}','${escHtml(s.beleg_url||'')}')" title="Löschen">🗑</button></td>
     </tr>`;
   });
 
@@ -614,6 +614,44 @@ function sendTeams(email, betrag) {
   const msg = `Beste Dank fürs Ihreiche vum Beleg, CHF ${betragStr} werded am ${today} uf diis Konto Zahlt`;
   const url = `https://teams.microsoft.com/l/chat/0/0?users=${encodeURIComponent(email)}&message=${encodeURIComponent(msg)}`;
   window.open(url, '_blank');
+}
+
+async function deleteSubmission(id, beleguUrl) {
+  if (!confirm('Diese Einreichung wirklich löschen? Der verknüpfte Kontoeintrag wird ebenfalls entfernt.')) return;
+  // Delete linked ledger entry
+  await db.from('ledger_entries').delete().eq('source_id', id).eq('source', 'submission');
+  // Delete file from storage
+  if (beleguUrl) {
+    await db.storage.from('belege').remove([beleguUrl]);
+  }
+  // Delete submission
+  const { error } = await db.from('submissions').delete().eq('id', id);
+  if (error) {
+    showToast('Fehler: ' + error.message, 'error');
+  } else {
+    showToast('Einreichung gelöscht.');
+    allSubmissions = allSubmissions.filter(s => s.id !== id);
+    renderSubmissionsTable(allSubmissions);
+  }
+}
+
+async function toggleContacted(id, current) {
+  const newVal = !current;
+  const { error } = await db.from('submissions').update({ contacted: newVal }).eq('id', id);
+  if (error) { showToast('Fehler: ' + error.message, 'error'); return; }
+  // Update in-memory state
+  const s = allSubmissions.find(s => s.id === id);
+  if (s) s.contacted = newVal;
+  // Update button without full reload
+  const btn = document.querySelector('[data-cid="' + id + '"]');
+  if (btn) {
+    btn.dataset.cv = newVal;
+    btn.classList.toggle('contacted-yes', newVal);
+    btn.title = newVal ? 'Kontaktiert' : 'Ausstehend';
+    btn.textContent = newVal ? '✓' : '○';
+    btn.onclick = function() { toggleContacted(id, newVal); };
+  }
+  showToast(newVal ? 'Als kontaktiert markiert.' : 'Markierung entfernt.');
 }
 
 function applyFilters() {
