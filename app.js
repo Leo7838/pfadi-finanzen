@@ -734,6 +734,7 @@ async function loadKonten(gruppe) {
     .order('datum', { ascending: true })
     .order('created_at', { ascending: true });
 
+  if (gruppe !== currentKontenGruppe) return;
   if (error) {
     container.innerHTML = `<p class="msg-error">Fehler: ${escHtml(error.message)}</p>`;
     return;
