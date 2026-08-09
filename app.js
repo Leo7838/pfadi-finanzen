@@ -1,6 +1,6 @@
 /* ============================================================
-PFADI KRIENS â FINANZEN
-app.js â Hauptlogik
+PFADI KRIENS – FINANZEN
+app.js – Hauptlogik
 Supabase Projekt: vecofpjmmyebljrdwojn
 ============================================================ */
 
@@ -25,7 +25,7 @@ let editingEintragId = null;
 
 const GRUPPEN = ['Biber', 'Auroras', 'Apollos', 'Mapfis', 'Bupfis', 'Pios', 'Rover'];
 
-// SHA-256 of "Mitglieder2026!" â used as fallback if no setting stored yet
+// SHA-256 of "Mitglieder2026!" – used as fallback if no setting stored yet
 const MEMBERS_PW_FALLBACK = '9737b41acf0113e49b3de3f8a6960f4030f754622767f8bcb2e28594deb1f18f';
 
 /* ============================================================
@@ -57,7 +57,7 @@ document.querySelectorAll('.nav-btn').forEach(btn => {
 });
 
 /* ============================================================
-FORM â LADEN & RENDERN
+FORM – LADEN & RENDERN
 ============================================================ */
 async function loadForm() {
   const { data, error } = await db
@@ -128,7 +128,7 @@ function renderForm(config) {
 }
 
 /* ============================================================
-FORM â BRANCHING
+FORM – BRANCHING
 ============================================================ */
 function setupBranching(config) {
   config.questions.forEach(q => {
@@ -164,7 +164,7 @@ function updateVisibility(config) {
 }
 
 /* ============================================================
-FORM â EINREICHUNG
+FORM – EINREICHUNG
 ============================================================ */
 async function handleFormSubmit(e) {
   e.preventDefault();
@@ -191,12 +191,12 @@ async function handleFormSubmit(e) {
   });
 
   if (!valid) {
-    showStatus(statusEl, 'Bitte alle Pflichtfelder ausfÃ¼llen.', 'error');
+    showStatus(statusEl, 'Bitte alle Pflichtfelder ausfüllen.', 'error');
     return;
   }
 
   submitBtn.disabled = true;
-  submitBtn.textContent = 'Wird eingereichtâ¦';
+  submitBtn.textContent = 'Wird eingereicht…';
   statusEl.classList.add('hidden');
 
   const formData = {};
@@ -261,7 +261,7 @@ async function handleFormSubmit(e) {
   // Auto-create ledger entry if projekt matches a gruppe
   const projektGruppe = (formData.projekt || '').trim();
   if (GRUPPEN.includes(projektGruppe) && formData.betrag && parseFloat(formData.betrag) > 0) {
-    const eintragText = [formData.titel, formData.name].filter(Boolean).join(' â ') || 'Einreichung';
+    const eintragText = [formData.titel, formData.name].filter(Boolean).join(' – ') || 'Einreichung';
     await db.from('ledger_entries').insert({
       gruppe: projektGruppe,
       datum: formData.beleg_datum || new Date().toISOString().slice(0, 10),
@@ -273,7 +273,7 @@ async function handleFormSubmit(e) {
     });
   }
 
-  showStatus(statusEl, 'â Beleg erfolgreich eingereicht! Danke.', 'success');
+  showStatus(statusEl, '✓ Beleg erfolgreich eingereicht! Danke.', 'success');
   form.reset();
   updateVisibility(formConfig);
   submitBtn.disabled = false;
@@ -287,7 +287,7 @@ function showStatus(el, msg, type) {
 }
 
 /* ============================================================
-MEMBERS â PASSWORD
+MEMBERS – PASSWORD
 ============================================================ */
 async function getMembersPasswordHash() {
   const { data } = await db
@@ -335,7 +335,7 @@ document.getElementById('btn-members-logout').addEventListener('click', () => {
   document.getElementById('members-dashboard').classList.add('hidden');
   document.getElementById('members-password').value = '';
   document.getElementById('members-login-error').classList.add('hidden');
-  document.getElementById('members-ledger-content').innerHTML = '<p class="loading-text">Wird geladenâ¦</p>';
+  document.getElementById('members-ledger-content').innerHTML = '<p class="loading-text">Wird geladen…</p>';
 });
 
 // Group tab clicks in Members
@@ -349,11 +349,11 @@ document.querySelectorAll('.members-tabs .tab-btn').forEach(btn => {
 });
 
 /* ============================================================
-MEMBERS â LEDGER DISPLAY
+MEMBERS – LEDGER DISPLAY
 ============================================================ */
 async function loadLedger(gruppe) {
   const container = document.getElementById('members-ledger-content');
-  container.innerHTML = '<p class="loading-text">Wird geladenâ¦</p>';
+  container.innerHTML = '<p class="loading-text">Wird geladen…</p>';
 
   const { data, error } = await db
     .from('ledger_entries')
@@ -383,7 +383,7 @@ function renderLedger(gruppe, entries) {
   });
 
   const salClass = saldo > 0 ? 'saldo-pos' : saldo < 0 ? 'saldo-neg' : 'saldo-zero';
-  const salFormatted = (saldo < 0 ? 'â ' : '') + 'CHF ' + Math.abs(saldo).toFixed(2);
+  const salFormatted = (saldo < 0 ? '– ' : '') + 'CHF ' + Math.abs(saldo).toFixed(2);
 
   let html = `
     <div class="ledger-saldo-card">
@@ -398,7 +398,7 @@ function renderLedger(gruppe, entries) {
   `;
 
   if (!rows.length) {
-    html += '<p style="padding:24px;color:#888;font-size:14px;text-align:center">Noch keine EintrÃ¤ge vorhanden.</p>';
+    html += '<p style="padding:24px;color:#888;font-size:14px;text-align:center">Noch keine Einträge vorhanden.</p>';
   } else {
     html += `
       <table class="ledger">
@@ -417,10 +417,10 @@ function renderLedger(gruppe, entries) {
     rows.forEach(r => {
       const datum = r.datum
         ? new Date(r.datum + 'T12:00:00').toLocaleDateString('de-CH', { day:'2-digit', month:'2-digit', year:'numeric' })
-        : 'â';
+        : '—';
       const einStr = r.einnahme ? 'CHF ' + Number(r.einnahme).toFixed(2) : '';
       const ausStr = r.ausgabe ? 'CHF ' + Number(r.ausgabe).toFixed(2) : '';
-      const salStr = (r._saldo < 0 ? 'â ' : '') + 'CHF ' + Math.abs(r._saldo).toFixed(2);
+      const salStr = (r._saldo < 0 ? '– ' : '') + 'CHF ' + Math.abs(r._saldo).toFixed(2);
       const sc = r._saldo > 0 ? 'cell-saldo-pos' : r._saldo < 0 ? 'cell-saldo-neg' : 'cell-saldo-zero';
       const pill = r.source === 'submission' ? '<span class="source-pill">Einreichung</span>' : '';
 
@@ -441,7 +441,7 @@ function renderLedger(gruppe, entries) {
 }
 
 /* ============================================================
-ADMIN â LOGIN / LOGOUT
+ADMIN – LOGIN / LOGOUT
 ============================================================ */
 document.getElementById('btn-login').addEventListener('click', async () => {
   const password = document.getElementById('admin-password').value;
@@ -505,11 +505,11 @@ document.querySelectorAll('#admin-dashboard .tab-btn').forEach(btn => {
 });
 
 /* ============================================================
-SUBMISSIONS â LADEN & ANZEIGEN
+SUBMISSIONS – LADEN & ANZEIGEN
 ============================================================ */
 async function loadSubmissions() {
   const container = document.getElementById('submissions-container');
-  container.innerHTML = '<p class="loading-text">Einreichungen werden geladenâ¦</p>';
+  container.innerHTML = '<p class="loading-text">Einreichungen werden geladen…</p>';
 
   const { data, error } = await db
     .from('submissions')
@@ -545,24 +545,24 @@ function renderSubmissionsTable(data) {
   data.forEach(s => {
     const datum = s.submitted_at
       ? new Date(s.submitted_at).toLocaleDateString('de-CH', { day:'2-digit', month:'2-digit', year:'numeric' })
-      : 'â';
-    const betrag = s.betrag != null ? 'CHF ' + Number(s.betrag).toFixed(2) : 'â';
+      : '—';
+    const betrag = s.betrag != null ? 'CHF ' + Number(s.betrag).toFixed(2) : '—';
     const bezahlt = [s.bezahlt_via, s.debit_card, s.rechnung_status].filter(Boolean).join(' / ');
     const belegLk = s.beleg_url
-      ? `<a href="javascript:void(0)" onclick="openBeleg('${s.id}','${escHtml(s.beleg_url)}')">Ãffnen</a>`
-      : 'â';
+      ? `<a href="javascript:void(0)" onclick="openBeleg('${s.id}','${escHtml(s.beleg_url)}')">Öffnen</a>`
+      : '—';
     const emailBtn = s.email
-      ? `<a href="javascript:void(0)" onclick="sendEmail('${escHtml(s.email)}','${escHtml(s.name || '')}','${escHtml(s.titel || '')}')" title="E-Mail senden">âï¸</a>`
+      ? `<a href="javascript:void(0)" onclick="sendEmail('${escHtml(s.email)}','${escHtml(s.name || '')}','${escHtml(s.titel || '')}')" title="E-Mail senden">✉️</a>`
       : '';
 
     rows += `<tr>
       <td>${datum}</td>
       <td>${escHtml(s.name || '')}${s.email ? `<small>${escHtml(s.email)}</small>` : ''}</td>
-      <td>${escHtml(s.projekt || 'â')}</td>
-      <td>${escHtml(s.titel || 'â')}</td>
+      <td>${escHtml(s.projekt || '—')}</td>
+      <td>${escHtml(s.titel || '—')}</td>
       <td class="amount">${betrag}</td>
-      <td>${escHtml(bezahlt || 'â')}</td>
-      <td class="iban">${escHtml(s.iban || 'â')}</td>
+      <td>${escHtml(bezahlt || '—')}</td>
+      <td class="iban">${escHtml(s.iban || '—')}</td>
       <td>${belegLk}</td>
       <td>${emailBtn}</td>
     </tr>`;
@@ -595,14 +595,14 @@ async function openBeleg(id, path) {
     .createSignedUrl(path, 120);
 
   if (error || !data?.signedUrl) {
-    showToast('Beleg konnte nicht geÃ¶ffnet werden.', 'error');
+    showToast('Beleg konnte nicht geöffnet werden.', 'error');
     return;
   }
   window.open(data.signedUrl, '_blank');
 }
 
 function sendEmail(email, name, titel) {
-  const subject = encodeURIComponent('Pfadi Kriens Finanzen â ' + (titel || 'Einreichung'));
+  const subject = encodeURIComponent('Pfadi Kriens Finanzen – ' + (titel || 'Einreichung'));
   const body = encodeURIComponent('Hallo ' + (name || '') + ',\n\n');
   window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
 }
@@ -665,7 +665,7 @@ document.getElementById('btn-export-excel').addEventListener('click', () => {
 });
 
 /* ============================================================
-KONTEN â ADMIN TAB
+KONTEN – ADMIN TAB
 ============================================================ */
 document.querySelectorAll('.gruppe-selector .gruppe-btn').forEach(btn => {
   btn.addEventListener('click', () => {
@@ -678,7 +678,7 @@ document.querySelectorAll('.gruppe-selector .gruppe-btn').forEach(btn => {
 
 async function loadKonten(gruppe) {
   const container = document.getElementById('konten-table-container');
-  container.innerHTML = '<p class="loading-text">Wird geladenâ¦</p>';
+  container.innerHTML = '<p class="loading-text">Wird geladen…</p>';
 
   const { data, error } = await db
     .from('ledger_entries')
@@ -707,7 +707,7 @@ function renderKontenTable(gruppe, entries) {
     return { ...e, _saldo: saldo };
   });
 
-  const salStr = (saldo < 0 ? 'â ' : '') + 'CHF ' + Math.abs(saldo).toFixed(2);
+  const salStr = (saldo < 0 ? '– ' : '') + 'CHF ' + Math.abs(saldo).toFixed(2);
   const salCls = saldo > 0 ? 'ks-pos' : saldo < 0 ? 'ks-neg' : 'ks-zero';
 
   let html = `
@@ -718,7 +718,7 @@ function renderKontenTable(gruppe, entries) {
   `;
 
   if (!rows.length) {
-    html += '<p style="color:#888;font-size:14px;padding:8px 0">Noch keine EintrÃ¤ge. Klicke Â«+ EintragÂ» um zu beginnen.</p>';
+    html += '<p style="color:#888;font-size:14px;padding:8px 0">Noch keine Einträge. Klicke «+ Eintrag» um zu beginnen.</p>';
   } else {
     html += `
       <div class="ledger-table-wrapper">
@@ -739,18 +739,18 @@ function renderKontenTable(gruppe, entries) {
     rows.forEach(r => {
       const datum = r.datum
         ? new Date(r.datum + 'T12:00:00').toLocaleDateString('de-CH', { day:'2-digit', month:'2-digit', year:'numeric' })
-        : 'â';
+        : '—';
       const einStr = r.einnahme ? 'CHF ' + Number(r.einnahme).toFixed(2) : '';
       const ausStr = r.ausgabe ? 'CHF ' + Number(r.ausgabe).toFixed(2) : '';
-      const rSalStr = (r._saldo < 0 ? 'â ' : '') + 'CHF ' + Math.abs(r._saldo).toFixed(2);
+      const rSalStr = (r._saldo < 0 ? '– ' : '') + 'CHF ' + Math.abs(r._saldo).toFixed(2);
       const sc = r._saldo > 0 ? 'cell-saldo-pos' : r._saldo < 0 ? 'cell-saldo-neg' : 'cell-saldo-zero';
       const isSubmission = r.source === 'submission';
       const pill = isSubmission ? '<span class="source-pill">Auto</span>' : '';
 
       const actions = isSubmission
-        ? `<button class="btn-icon btn-danger" title="LÃ¶schen" onclick="deleteEintrag('${r.id}')">ðï¸</button>`
-        : `<button class="btn-icon" title="Bearbeiten" onclick="editEintrag('${r.id}','${escHtml(r.datum || '')}','${escHtml(r.text || '')}',${r.einnahme || 0},${r.ausgabe || 0})">âï¸</button>
-           <button class="btn-icon btn-danger" title="LÃ¶schen" onclick="deleteEintrag('${r.id}')">ðï¸</button>`;
+        ? `<button class="btn-icon btn-danger" title="Löschen" onclick="deleteEintrag('${r.id}')">🗑️</button>`
+        : `<button class="btn-icon" title="Bearbeiten" onclick="editEintrag('${r.id}','${escHtml(r.datum || '')}','${escHtml(r.text || '')}',${r.einnahme || 0},${r.ausgabe || 0})">✏️</button>
+           <button class="btn-icon btn-danger" title="Löschen" onclick="deleteEintrag('${r.id}')">🗑️</button>`;
 
       html += `<tr>
         <td>${escHtml(datum)}</td>
@@ -773,7 +773,7 @@ function renderKontenTable(gruppe, entries) {
 // Open add modal
 document.getElementById('btn-add-eintrag').addEventListener('click', () => {
   editingEintragId = null;
-  document.getElementById('eintrag-modal-title').textContent = 'Eintrag hinzufÃ¼gen';
+  document.getElementById('eintrag-modal-title').textContent = 'Eintrag hinzufügen';
   document.getElementById('e-datum').value = new Date().toISOString().slice(0, 10);
   document.getElementById('e-text').value = '';
   document.getElementById('e-betrag').value = '';
@@ -803,13 +803,13 @@ function editEintrag(id, datum, text, einnahme, ausgabe) {
 
 // Delete an entry
 async function deleteEintrag(id) {
-  if (!confirm('Eintrag wirklich lÃ¶schen?')) return;
+  if (!confirm('Eintrag wirklich löschen?')) return;
 
   const { error } = await db.from('ledger_entries').delete().eq('id', id);
   if (error) {
     showToast('Fehler: ' + error.message, 'error');
   } else {
-    showToast('Eintrag gelÃ¶scht.');
+    showToast('Eintrag gelöscht.');
     loadKonten(currentKontenGruppe);
   }
 }
@@ -822,7 +822,7 @@ document.getElementById('btn-eintrag-save').addEventListener('click', async () =
   const betragRaw = parseFloat(document.getElementById('e-betrag').value);
 
   if (!datum || !text || isNaN(betragRaw) || betragRaw <= 0) {
-    showToast('Bitte alle Felder ausfÃ¼llen.', 'error');
+    showToast('Bitte alle Felder ausfüllen.', 'error');
     return;
   }
 
@@ -863,7 +863,7 @@ document.getElementById('eintrag-modal-overlay').addEventListener('click', e => 
 });
 
 /* ============================================================
-FORM BUILDER â ANZEIGEN
+FORM BUILDER – ANZEIGEN
 ============================================================ */
 function loadFormBuilder() {
   if (!formConfig) return;
@@ -896,14 +896,14 @@ function renderQuestionsList(questions) {
         <span class="q-index">${i + 1}</span>
         <div>
           <strong>${escHtml(q.label)}</strong>
-          <small>${tags.join(' Â· ')}</small>
+          <small>${tags.join(' · ')}</small>
         </div>
       </div>
       <div class="question-actions">
-        <button class="btn-icon" title="Nach oben" onclick="moveQuestion(${i}, -1)" ${i === 0 ? 'disabled' : ''}>â</button>
-        <button class="btn-icon" title="Nach unten" onclick="moveQuestion(${i}, 1)" ${i === questions.length - 1 ? 'disabled' : ''}>â</button>
-        <button class="btn-icon" title="Bearbeiten" onclick="editQuestion(${i})">âï¸</button>
-        <button class="btn-icon btn-danger" title="LÃ¶schen" onclick="deleteQuestion(${i})">ðï¸</button>
+        <button class="btn-icon" title="Nach oben" onclick="moveQuestion(${i}, -1)" ${i === 0 ? 'disabled' : ''}>↑</button>
+        <button class="btn-icon" title="Nach unten" onclick="moveQuestion(${i}, 1)" ${i === questions.length - 1 ? 'disabled' : ''}>↓</button>
+        <button class="btn-icon" title="Bearbeiten" onclick="editQuestion(${i})">✏️</button>
+        <button class="btn-icon btn-danger" title="Löschen" onclick="deleteQuestion(${i})">🗑️</button>
       </div>`;
     list.appendChild(div);
   });
@@ -918,13 +918,13 @@ function moveQuestion(index, direction) {
 }
 
 function deleteQuestion(index) {
-  if (!confirm(`Frage "${formConfig.questions[index].label}" lÃ¶schen?`)) return;
+  if (!confirm(`Frage "${formConfig.questions[index].label}" löschen?`)) return;
   formConfig.questions.splice(index, 1);
   renderQuestionsList(formConfig.questions);
 }
 
 /* ============================================================
-FORM BUILDER â MODAL
+FORM BUILDER – MODAL
 ============================================================ */
 document.getElementById('btn-add-question').addEventListener('click', () => {
   editingQuestionIdx = null;
@@ -937,7 +937,7 @@ function editQuestion(index) {
 }
 
 function openQuestionModal(q) {
-  document.getElementById('modal-title').textContent = q ? 'Frage bearbeiten' : 'Frage hinzufÃ¼gen';
+  document.getElementById('modal-title').textContent = q ? 'Frage bearbeiten' : 'Frage hinzufügen';
 
   document.getElementById('q-label').value = q?.label || '';
   document.getElementById('q-type').value = q?.type || 'text';
@@ -1026,7 +1026,7 @@ document.getElementById('btn-modal-save').addEventListener('click', () => {
 });
 
 /* ============================================================
-FORM BUILDER â SPEICHERN / JSON BACKUP
+FORM BUILDER – SPEICHERN / JSON BACKUP
 ============================================================ */
 document.getElementById('btn-save-form').addEventListener('click', async () => {
   const { error } = await db
@@ -1054,12 +1054,12 @@ document.getElementById('btn-upload-json').addEventListener('change', e => {
   reader.onload = ev => {
     try {
       const parsed = JSON.parse(ev.target.result);
-      if (!parsed.questions || !Array.isArray(parsed.questions)) throw new Error('UngÃ¼ltige Struktur');
+      if (!parsed.questions || !Array.isArray(parsed.questions)) throw new Error('Ungültige Struktur');
       formConfig = parsed;
       renderQuestionsList(formConfig.questions);
-      showToast('JSON geladen. Klicke "Speichern" um zu Ã¼bernehmen.');
+      showToast('JSON geladen. Klicke "Speichern" um zu übernehmen.');
     } catch {
-      showToast('UngÃ¸ltige JSON-Datei.', 'error');
+      showToast('Ungøltige JSON-Datei.', 'error');
     }
   };
   reader.readAsText(file);
@@ -1067,7 +1067,7 @@ document.getElementById('btn-upload-json').addEventListener('change', e => {
 });
 
 /* ============================================================
-EINSTELLUNGEN â ADMIN PASSWORT
+EINSTELLUNGEN – ADMIN PASSWORT
 ============================================================ */
 document.getElementById('btn-change-password').addEventListener('click', async () => {
   const newPwd = document.getElementById('new-password').value;
@@ -1083,7 +1083,7 @@ document.getElementById('btn-change-password').addEventListener('click', async (
     return;
   }
   if (newPwd !== confirm) {
-    statusEl.textContent = 'PasswÃ¶rter stimmen nicht Ã¼berein.';
+    statusEl.textContent = 'Passwörter stimmen nicht überein.';
     statusEl.className = 'msg-error';
     statusEl.classList.remove('hidden');
     return;
@@ -1094,7 +1094,7 @@ document.getElementById('btn-change-password').addEventListener('click', async (
     statusEl.textContent = 'Fehler: ' + error.message;
     statusEl.className = 'msg-error';
   } else {
-    statusEl.textContent = 'â Admin-Passwort erfolgreich geÃ¤ndert.';
+    statusEl.textContent = '✓ Admin-Passwort erfolgreich geändert.';
     statusEl.className = 'msg-success';
     document.getElementById('new-password').value = '';
     document.getElementById('confirm-password').value = '';
@@ -1103,7 +1103,7 @@ document.getElementById('btn-change-password').addEventListener('click', async (
 });
 
 /* ============================================================
-EINSTELLUNGEN â MEMBERS PASSWORT
+EINSTELLUNGEN – MEMBERS PASSWORT
 ============================================================ */
 document.getElementById('btn-change-members-password').addEventListener('click', async () => {
   const newPwd = document.getElementById('new-members-password').value;
@@ -1119,7 +1119,7 @@ document.getElementById('btn-change-members-password').addEventListener('click',
     return;
   }
   if (newPwd !== confirm) {
-    statusEl.textContent = 'PasswÃ¶rter stimmen nicht Ã¼berein.';
+    statusEl.textContent = 'Passwörter stimmen nicht überein.';
     statusEl.className = 'msg-error';
     statusEl.classList.remove('hidden');
     return;
@@ -1134,7 +1134,7 @@ document.getElementById('btn-change-members-password').addEventListener('click',
     statusEl.textContent = 'Fehler: ' + error.message;
     statusEl.className = 'msg-error';
   } else {
-    statusEl.textContent = 'â Members-Passwort erfolgreich geÃ¤ndert.';
+    statusEl.textContent = '✓ Members-Passwort erfolgreich geändert.';
     statusEl.className = 'msg-success';
     document.getElementById('new-members-password').value = '';
     document.getElementById('confirm-members-password').value = '';
@@ -1143,7 +1143,7 @@ document.getElementById('btn-change-members-password').addEventListener('click',
 });
 
 /* ============================================================
-EINSTELLUNGEN â BACKUP
+EINSTELLUNGEN – BACKUP
 ============================================================ */
 document.getElementById('btn-backup-config').addEventListener('click', () => {
   if (!formConfig) { showToast('Kein Formular geladen.', 'error'); return; }
