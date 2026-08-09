@@ -707,7 +707,7 @@ function renderKontenTable(gruppe, entries) {
     return { ...e, _saldo: saldo };
   });
 
- #const salStr = (saldo < 0 ? 'â ' : '') + 'CHF ' + Math.abs(saldo).toFixed(2);
+  const salStr = (saldo < 0 ? 'â ' : '') + 'CHF ' + Math.abs(saldo).toFixed(2);
   const salCls = saldo > 0 ? 'ks-pos' : saldo < 0 ? 'ks-neg' : 'ks-zero';
 
   let html = `
@@ -787,7 +787,7 @@ function editEintrag(id, datum, text, einnahme, ausgabe) {
   editingEintragId = id;
   document.getElementById('eintrag-modal-title').textContent = 'Eintrag bearbeiten';
   document.getElementById('e-datum').value = datum;
- #document.getElementById('e-text').value = text;
+  document.getElementById('e-text').value = text;
 
   if (einnahme > 0) {
     document.querySelector('input[name="e-typ"][value="einnahme"]').checked = true;
@@ -798,7 +798,7 @@ function editEintrag(id, datum, text, einnahme, ausgabe) {
   }
 
   document.getElementById('eintrag-modal-overlay').classList.remove('hidden');
- #document.getElementById('e-text').focus();
+  document.getElementById('e-text').focus();
 }
 
 // Delete an entry
