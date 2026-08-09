@@ -10,7 +10,7 @@ Primary: #7a2333 | Font: Inter
 body {
   font-family: 'Inter', sans-serif;
   font-size: 15px;
-  color: #1a1a1a;
+  color: #262524;
   background: #f5f0eb;
   min-height: 100vh;
 }
@@ -27,12 +27,12 @@ header {
 }
 
 .header-inner {
-  max-width: 960px;
+  max-width: 1080px;
   margin: 0 auto;
   display: flex;
   align-items: center;
   gap: 14px;
-  height: 56px;
+  height: 76px;
 }
 
 .logo {
@@ -84,7 +84,7 @@ nav .nav-btn.active {
 
 /* ---------- Main ---------- */
 main {
-  max-width: 760px;
+  max-width: 1080px;
   margin: 0 auto;
   padding: 24px 16px 48px;
 }
@@ -154,7 +154,7 @@ h3 {
   padding: 10px 12px;
   font-family: inherit;
   font-size: 14px;
-  color: #1a1a1a;
+  color: #262524;
   transition: border-color 0.15s, box-shadow 0.15s;
   appearance: none;
   -webkit-appearance: none;
@@ -374,7 +374,7 @@ h3 {
   padding: 7px 10px;
   font-family: inherit;
   font-size: 13px;
-  color: #1a1a1a;
+  color: #262524;
   height: 34px;
 }
 
@@ -399,7 +399,7 @@ table thead {
   background: #faf8f6;
 }
 
-(table th {
+table th {
   text-align: left;
   padding: 10px 14px;
   font-weight: 600;
@@ -483,7 +483,7 @@ table a:hover { text-decoration: underline; }
 .question-info strong {
   display: block;
   font-size: 14px;
-  color: #1a1a1a;
+  color: #262524;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -722,7 +722,7 @@ table.ledger td.cell-saldo-zero { color: #888; font-weight: 600; }
   bottom: 24px;
   left: 50%;
   transform: translateX(-50%);
-  background: #1a1a1a;
+  background: #262524;
   color: white;
   padding: 12px 24px;
   border-radius: 24px;
@@ -751,3 +751,34 @@ table.ledger td.cell-saldo-zero { color: #888; font-weight: 600; }
   .modal { padding: 20px 16px; }
   .konten-header { flex-direction: column; }
 }
+
+
+/* ---------- Action buttons in submissions table ---------- */
+.btn-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3px 8px;
+  border-radius: 5px;
+  font-size: 12px;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  border: none;
+  line-height: 1.6;
+  transition: all 0.12s;
+}
+
+.btn-teams {
+  background: #4b53bc;
+  color: white;
+  margin-right: 4px;
+}
+.btn-teams:hover { background: #3a41a0; color: white; }
+
+.btn-email {
+  background: #f5f0eb;
+  color: #7a2333;
+  border: 1px solid #e0d8d0;
+}
+.btn-email:hover { background: #ede7e0; }
