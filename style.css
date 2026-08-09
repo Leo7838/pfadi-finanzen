@@ -782,3 +782,6 @@ table.ledger td.cell-saldo-zero { color: #888; font-weight: 600; }
   border: 1px solid #e0d8d0;
 }
 .btn-email:hover { background: #ede7e0; }
+
+.btn-contacted { color: #888; border-color: #ccc; }
+.btn-contacted.contacted-yes { color: white; background: #2F7D4F; border-color: #2F7D4F; }
