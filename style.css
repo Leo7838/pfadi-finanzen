@@ -1,4 +1,5 @@
-/* ============================================================
+/* MISS: max-width: 960px; *//* MISS: max-width: 760px; *//* MISS: color: #1a1a1a;
+  background:  *//* ============================================================
 PFADI KRIENS â FINANZEN
 Design inspired by brilliant-sunshine-485839.netlify.app
 Primary: #7a2333 | Font: Inter
@@ -785,3 +786,35 @@ table.ledger td.cell-saldo-zero { color: #888; font-weight: 600; }
 
 .btn-contacted { color: #888; border-color: #ccc; }
 .btn-contacted.contacted-yes { color: white; background: #2F7D4F; border-color: #2F7D4F; }
+
+/* ---------- Action buttons (submissions table) ---------- */
+.btn-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 6px;
+  border: 1px solid #e0d8d0;
+  background: #f5f0eb;
+  font-size: 13px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.12s;
+  margin-right: 4px;
+}
+.btn-action:hover { background: #ede7e0; border-color: #c8c0b8; }
+
+.btn-teams { color: #4b53bc; }
+.btn-teams:hover { background: #eeeffe; border-color: #4b53bc; }
+
+.btn-email { color: #7a2333; }
+.btn-email:hover { background: #fdf0f2; border-color: #7a2333; }
+
+.btn-contacted { color: #aaa; }
+.btn-contacted:hover { background: #edf7f0; border-color: #2F7D4F; }
+.btn-contacted.contacted-yes { color: white; background: #2F7D4F; border-color: #2F7D4F; }
+.btn-contacted.contacted-yes:hover { background: #266642; }
+
+.btn-delete { color: #7a2333; }
+.btn-delete:hover { background: #fdf0f2; border-color: #7a2333; }
