@@ -565,7 +565,7 @@ function renderSubmissionsTable(data) {
       <td>${escHtml(bezahlt || '—')}</td>
       <td class="iban">${escHtml(s.iban || '—')}</td>
       <td>${belegLk}</td>
-      <td style="white-space:nowrap">${teamsBtn}${emailBtn}<button data-cid="${s.id}" data-cv="${!!s.contacted}" class="btn-icon btn-contacted${s.contacted ? ' contacted-yes' : ''}" onclick="toggleContacted('${s.id}',${!!s.contacted})" title="${s.contacted ? 'Kontaktiert' : 'Ausstehend'}">${s.contacted ? '✓' : '○'}</button><button class="btn-icon btn-danger" onclick="deleteSubmission('${s.id}','${escHtml(s.beleg_url||'')}')" title="Löschen">🗑</button></td>
+      <td style="white-space:nowrap">${teamsBtn}${emailBtn}<button data-cid="${s.id}" data-cv="${!!s.contacted}" class="btn-icon btn-contacted${s.contacted ? ' contacted-yes' : ''}" onclick="toggleContacted('${s.id}',${!!s.contacted})" title="${s.contacted ? 'Kontaktiert' : 'Ausstehend'}">${s.contacted ? '✓' : '○'}</button><button class="btn-action btn-delete" title="Löschen" onclick="deleteSubmission('${s.id}','${escHtml(s.beleg_url||'')}')">🗑</button></td>
     </tr>`;
   });
 
@@ -1106,7 +1106,7 @@ document.getElementById('btn-upload-json').addEventListener('change', e => {
       renderQuestionsList(formConfig.questions);
       showToast('JSON geladen. Klicke "Speichern" um zu übernehmen.');
     } catch {
-      showToast('Ungøltige JSON-Datei.', 'error');
+      showToast('Ungültige JSON-Datei.', 'error');
     }
   };
   reader.readAsText(file);
