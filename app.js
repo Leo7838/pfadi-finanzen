@@ -551,11 +551,12 @@ function renderSubmissionsTable(data) {
     const belegLk = s.beleg_url
       ? `<a href="javascript:void(0)" onclick="openBeleg('${s.id}','${escHtml(s.beleg_url)}')">Öffnen</a>`
       : '—';
-    const emailBtn = s.email
-      ? `<a href="javascript:void(0)" onclick="sendEmail('${escHtml(s.email)}','${escHtml(s.name || '')}','${escHtml(s.titel || '')}')" title="E-Mail senden">✉️</a>`
+      const teamsBtn = s.email
+      ? `<a href="javascript:void(0)" onclick="sendTeams('${escHtml(s.email)}',${s.betrag != null ? s.betrag : 0})" class="btn-action btn-teams" title="Teams Nachricht">Teams</a>`
       : '';
-
-    rows += `<tr>
+    const emailBtn = s.email
+      ? `<a href="javascript:void(0)" onclick="sendEmail('${escHtml(s.email)}','${escHtml(s.name || '')}','${escHtml(s.titel || '')}')" class="btn-action btn-email" title="E-Mail senden">Mail</a>`
+      : '';    rows += `<tr>
       <td>${datum}</td>
       <td>${escHtml(s.name || '')}${s.email ? `<small>${escHtml(s.email)}</small>` : ''}</td>
       <td>${escHtml(s.projekt || '—')}</td>
@@ -564,7 +565,7 @@ function renderSubmissionsTable(data) {
       <td>${escHtml(bezahlt || '—')}</td>
       <td class="iban">${escHtml(s.iban || '—')}</td>
       <td>${belegLk}</td>
-      <td>${emailBtn}</td>
+      <td style="white-space:nowrap">${teamsBtn}${emailBtn}</td>
     </tr>`;
   });
 
@@ -581,7 +582,7 @@ function renderSubmissionsTable(data) {
             <th>Bezahlt via</th>
             <th>IBAN</th>
             <th>Beleg</th>
-            <th>Mail</th>
+            <th>Aktionen</th>
           </tr>
         </thead>
         <tbody>${rows}</tbody>
@@ -605,6 +606,14 @@ function sendEmail(email, name, titel) {
   const subject = encodeURIComponent('Pfadi Kriens Finanzen – ' + (titel || 'Einreichung'));
   const body = encodeURIComponent('Hallo ' + (name || '') + ',\n\n');
   window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
+}
+
+function sendTeams(email, betrag) {
+  const today = new Date().toLocaleDateString('de-CH', { day: '2-digit', month: '2-digit', year: 'numeric' });
+  const betragStr = betrag > 0 ? Number(betrag).toFixed(2) : '?';
+  const msg = `Beste Dank fürs Ihreiche vum Beleg, CHF ${betragStr} werded am ${today} uf diis Konto Zahlt`;
+  const url = `https://teams.microsoft.com/l/chat/0/0?users=${encodeURIComponent(email)}&message=${encodeURIComponent(msg)}`;
+  window.open(url, '_blank');
 }
 
 function applyFilters() {
